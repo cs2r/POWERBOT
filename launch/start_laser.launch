@@ -1,0 +1,29 @@
+<launch>
+
+    <arg name="port" default="/dev/ttyUSB0" doc="serial port to communicate with the robot." />
+    <arg name="laser_port" default="/dev/ttyUSB1" doc="serial port to communicate with the Laser LMS200." />
+    <arg name="baudrate" default="38400"/>
+    
+    <!-- RosAia -->
+	<node pkg="rosaria" type="RosAria" name="RosAria" output="screen" required="true">
+		<param name="port" value="$(arg port)" />
+		<remap from="RosAria/cmd_vel" to="cmd_vel" />
+		<remap from="RosAria/pose" to="odom" />
+		<remap from="RosAria/bumper_state" to="bumper_state" />
+        	<remap from="RosAria/sonar" to="sonar" />
+        	<remap from="RosAria/sonar_pointcloud2" to="sonar_pointcloud2" />
+        	<remap from="RosAria/battery_state_of_charge" to="battery_state_of_charge" />
+        	<remap from="RosAria/battery_voltage" to="battery_voltage" />
+        	<remap from="RosAria/battery_recharge_state" to="battery_recharge_state" />
+        	<remap from="RosAria/motors_state" to="motors_state" />
+	</node>
+
+	<node pkg="sicktoolbox_wrapper" type="sicklms" name="Laser" output="screen" respawn="true">
+		<param name="port" value="$(arg laser_port)" />
+		<param name="_baud" value="$(arg baudrate)" />
+		<param name="inverted" value="true" />
+	</node>
+
+	<node pkg="tf" type="static_transform_publisher" name="laser" args="0.251 0 0 0 0 0 base_link laser 100" />
+
+</launch>
